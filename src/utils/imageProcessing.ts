@@ -1,5 +1,6 @@
 import type { BeadColor, PatternConfig, ProcessedPattern, ColorUsage } from '../types';
 import { findNearestColor } from './colorMatching';
+import { calcImageRect } from './layout';
 
 export async function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -26,27 +27,10 @@ export function processImage(
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, width, height);
 
-  const imgAspect = img.naturalWidth / img.naturalHeight;
-  const boardAspect = width / height;
-
-  let dw: number, dh: number;
-  if (imgAspect > boardAspect) {
-    dw = width;
-    dh = Math.round(width / imgAspect);
-  } else {
-    dh = height;
-    dw = Math.round(height * imgAspect);
-  }
-
-  const s = config.imageScale / 100;
-  dw = Math.max(1, Math.round(dw * s));
-  dh = Math.max(1, Math.round(dh * s));
-
-  const ox = Math.floor((width - dw) / 2) + config.imageOffsetX;
-  const oy = Math.floor((height - dh) / 2) + config.imageOffsetY;
+  const rect = calcImageRect(img.naturalWidth, img.naturalHeight, width, height, config);
 
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(img, ox, oy, dw, dh);
+  ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
 
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;

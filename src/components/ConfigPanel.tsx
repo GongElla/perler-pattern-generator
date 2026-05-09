@@ -191,15 +191,6 @@ export default function ConfigPanel({ config, onChange, disabled }: ConfigPanelP
             />
             显示网格线
           </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, cursor: disabled ? 'not-allowed' : 'pointer' }}>
-            <input
-              type="checkbox"
-              checked={config.showCodes}
-              onChange={(e) => update('showCodes', e.target.checked)}
-              disabled={disabled}
-            />
-            显示色号（格子足够大时生效）
-          </label>
         </div>
       </div>
 
