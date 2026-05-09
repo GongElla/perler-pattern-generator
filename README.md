@@ -1,73 +1,177 @@
-# React + TypeScript + Vite
+# 拼豆图纸转化器
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+将任意图片转化为拼豆 / 融合豆图纸的 Web 工具。支持 MARD 全系 291 色，提供多种颜色套装，可在图纸上自由编辑。
 
-Currently, two official plugins are available:
+## 在线使用
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**[https://gongella.github.io/perler-pattern-generator/](https://gongella.github.io/perler-pattern-generator/)**
 
-## React Compiler
+无需安装，浏览器打开即用。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 功能特性
 
-## Expanding the ESLint configuration
+- 上传任意图片，自动匹配最接近的拼豆颜色
+- 支持 **CIEDE2000**（更精确）和 **欧氏距离**（更快）两种颜色匹配算法
+- 提供 6 档颜色套装（24 / 48 / 72 / 96 / 120 / 221 色）及不限模式（291 全色）
+- 支持多种画板尺寸，包括 104×104 四板拼接
+- 图纸上直接绘制编辑：**画笔**、**取色**、**撤回**、**还原**
+- 色卡面板可浏览当前套装全部颜色
+- 鼠标拖拽或方向键微调图片对齐位置
+- 图纸显示网格线和色号，均可独立开关
+- 一键导出带颜色用量统计表的 PNG 图纸
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 使用指南
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. 上传图片
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+点击左侧「上传图片」区域，选择一张本地图片。支持常见图片格式（JPG、PNG、WebP 等）。
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. 配置参数
+
+上传图片后，左侧面板可调整以下选项：
+
+**豆型**
+- **2.6mm 迷你豆（融合豆）**：国内主流尺寸
+- **5mm 标准豆（Perler / Hama Midi）**：国际常见规格
+
+**板子尺寸**
+
+| 尺寸 | 说明 |
+|------|------|
+| 50×50 | 间距稍大，有孔立体 |
+| 52×52 | 标准板，约 14×14cm |
+| 78×78 | 中幅板 |
+| 104×104 | 大幅，2×2 块 52×52 拼接 |
+
+也支持自定义宽高（8–200 格）。
+
+**图片缩放**
+
+拖动滑块调整图片在图纸中的占比（10%–100%）。缩放越大，图片细节越多但颗粒越粗。
+
+**颜色套装**
+
+限制匹配时使用的颜色范围，套装越小处理越快，但色彩还原度越低。详见下方「颜色套装说明」。
+
+**图纸显示**
+
+- **显示网格线**：每 5 格加粗一次，方便数格子
+- **显示色号**：每颗豆子上标注颜色编号
+
+**颜色匹配算法**
+
+- **CIEDE2000**：国际标准色差公式，匹配更准确，推荐使用
+- **欧氏距离**：RGB 空间直线距离，计算更快
+
+### 3. 调整图片位置
+
+生成图纸后，图像叠加层会显示在原图相对网格的位置上。你可以：
+
+- **鼠标拖拽**：直接在画布上拖动图像（按住即显示半透明原图叠加层）
+- **方向键**：← ↑ ↓ → 逐格微调（需在画笔 / 取色未激活时使用）
+- **浮动方向键**：画布右上角的 D-pad 按钮，点击逐格移动，↺ 重置位置
+
+> 如果之前用画笔修改过图纸，移动图像前会弹出确认提示，防止误操作清空编辑记录。
+
+### 4. 画笔编辑
+
+图纸下方的编辑面板提供了完整的像素级编辑功能：
+
+| 按钮 | 功能 |
+|------|------|
+| **画笔** | 激活后光标变为十字，点击或拖拽在图纸上绘制当前颜色 |
+| **撤回** | 撤销上一次画笔笔划（支持多步撤回） |
+| **还原** | 重做被撤回的笔划 |
+| **色卡** | 展开/收起当前颜色套装的全部色卡，点击选取颜色 |
+| **取色** | 激活后光标变为十字，点击图纸上的已有色块拾取颜色 |
+
+当前选中颜色会显示在取色按钮右侧的色块指示器中，同时显示颜色编号。
+
+> 切换颜色套装会自动清空编辑记录并重置画笔状态。
+
+### 5. 导出图纸
+
+点击左侧底部「导出 PNG」按钮，将当前图纸导出为 PNG 图片。导出的图片包含：
+
+- 完整的拼豆图纸（含网格线和色号，与画布显示一致）
+- 底部颜色用量统计表（含色块、色号和颗数）
+
+104×104 尺寸的图纸还会在拼接线处标注红色虚线。
+
+## 颜色套装说明
+
+本工具使用 **MARD 官方 291 色数据**（来源：[maxcleme/beadcolors](https://github.com/maxcleme/beadcolors)），颜色按系列分为 A–H、M、P、Q、R、T、Y、ZG，共计 15 个系列。
+
+### 套装一览
+
+| 套装 | 色数 | 适用场景 |
+|------|------|----------|
+| 24 色（基础入门） | 24 | 新手入门，覆盖基本色系 |
+| 48 色（进阶常用） | 48 | 日常拼豆，常用色齐全 |
+| 72 色（细腻过渡） | 72 | 更多中间色调，色彩过渡自然 |
+| 96 色（人物 / 照片向） | 96 | 人物肖像、照片还原场景 |
+| 120 色（高还原） | 120 | 接近全色系的色彩表现 |
+| 221 色（全套满配） | 221 | A–M 全系列，几乎覆盖所有 MARD 颜色 |
+| 不限 | 291 | 全部 MARD 颜色（含 P/Q/R/T/Y/ZG 特殊系列） |
+
+套装范围越小，匹配速度越快，但色彩还原度越低。建议从 72 色起步，根据实际效果调整。
+
+### 各系列颜色数量
+
+| 系列 | 色数 | 色系 |
+|------|------|------|
+| A | 26 | 黄色 / 橙色系 |
+| B | 32 | 绿色系 |
+| C | 29 | 蓝色系 |
+| D | 26 | 紫色系 |
+| E | 24 | 粉色系 |
+| F | 25 | 红色系 |
+| G | 21 | 棕色 / 肤色系 |
+| H | 23 | 灰色 / 白色 / 黑色系 |
+| M | 15 | 莫兰迪色系 |
+| P / Q / R / T / Y / ZG | 70 | 特殊色 / 补充色系 |
+
+## 键盘快捷键
+
+| 按键 | 操作 |
+|------|------|
+| ← ↑ ↓ → | 逐格移动图像位置（画笔/取色未激活时） |
+
+## 本地运行
+
+### 环境要求
+
+- [Node.js](https://nodejs.org/) 18+
+- npm
+
+### 安装与启动
+
+```bash
+# 克隆仓库
+git clone git@github.com:GongElla/perler-pattern-generator.git
+cd perler-pattern-generator
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+
+# 构建生产版本
+npm run build
+
+# 部署到 GitHub Pages
+npm run deploy
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 技术栈
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **React 19** + **TypeScript**
+- **Vite** 构建工具
+- **HTML5 Canvas** 图纸渲染
+- **CIEDE2000** 色差算法
+- **GitHub Pages** 部署
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## License
+
+MIT
