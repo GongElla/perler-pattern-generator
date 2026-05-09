@@ -14,12 +14,12 @@ export interface BoardSize {
   label: string;
 }
 
-export type KitSize = 24 | 48 | 72 | 144 | 221;
+export type KitSize = 24 | 48 | 72 | 96 | 120 | 221;
 
 export interface PatternConfig {
   beadType: BeadType;
   boardSize: BoardSize;
-  kitSize: KitSize | null; // null means unlimited (221)
+  kitSize: KitSize | null; // null means unlimited (291)
   imageScale: number; // 10-100, percentage of board the image occupies
   imageOffsetX: number; // manual image offset in cells
   imageOffsetY: number;

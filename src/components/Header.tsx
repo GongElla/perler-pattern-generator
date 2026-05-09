@@ -23,7 +23,7 @@ export default function Header({ beadType }: HeaderProps) {
           拼豆图纸转化器
         </h1>
         <div style={{ fontSize: 12, color: '#999', marginTop: 2 }}>
-          MARD 221 色 · {beadLabel}
+          MARD 291 色 · {beadLabel}
         </div>
       </div>
     </header>

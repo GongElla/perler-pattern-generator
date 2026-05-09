@@ -225,11 +225,13 @@ export default function PatternCanvas({ pattern, config, uploadedImage, palette,
     lastPos.current = { x: e.clientX, y: e.clientY };
 
     const rect = canvasRef.current.getBoundingClientRect();
-    const scaleX = pattern.width / rect.width;
-    const scaleY = pattern.height / rect.height;
+    const canvas = canvasRef.current;
+    const dims = calculateCanvasDimensions(pattern);
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
 
-    cellOffset.current.x += Math.round(pdx * scaleX);
-    cellOffset.current.y += Math.round(pdy * scaleY);
+    cellOffset.current.x += Math.round(pdx * scaleX / dims.cellSize);
+    cellOffset.current.y += Math.round(pdy * scaleY / dims.cellSize);
 
     updateOverlay();
   }, [painting, dragging, pattern]);

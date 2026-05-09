@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import type { PatternConfig, BoardSize, KitSize, BeadType } from '../types';
+import { getAvailableColors } from '../colors';
 
 interface ConfigPanelProps {
   config: PatternConfig;
@@ -15,15 +16,20 @@ const BOARD_SIZES: BoardSize[] = [
 ];
 
 const KIT_OPTIONS: { value: KitSize | null; label: string }[] = [
-  { value: null, label: '不限（使用全部 221 色）' },
-  { value: 24, label: '24 色套装' },
-  { value: 48, label: '48 色套装' },
-  { value: 72, label: '72 色套装' },
-  { value: 144, label: '144 色套装' },
+  { value: null, label: '不限（使用全部 291 色）' },
+  { value: 24, label: '24 色（基础入门）' },
+  { value: 48, label: '48 色（进阶常用）' },
+  { value: 72, label: '72 色（细腻过渡）' },
+  { value: 96, label: '96 色（人物 / 照片向）' },
+  { value: 120, label: '120 色（高还原）' },
+  { value: 221, label: '221 色（全套满配）' },
 ];
 
 export default function ConfigPanel({ config, onChange, disabled }: ConfigPanelProps) {
   const [localScale, setLocalScale] = useState(config.imageScale);
+  const [showKitDetail, setShowKitDetail] = useState(false);
+
+  const kitColors = useMemo(() => getAvailableColors(config.kitSize), [config.kitSize]);
 
   const update = useCallback(
     <K extends keyof PatternConfig>(key: K, value: PatternConfig[K]) => {
@@ -177,6 +183,62 @@ export default function ConfigPanel({ config, onChange, disabled }: ConfigPanelP
             </option>
           ))}
         </select>
+        <div
+          onClick={() => setShowKitDetail(v => !v)}
+          style={{
+            marginTop: 8,
+            fontSize: 12,
+            color: '#666',
+            cursor: 'pointer',
+            userSelect: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+          }}
+        >
+          <span style={{ transition: 'transform 0.15s', display: 'inline-block', transform: showKitDetail ? 'rotate(90deg)' : undefined }}>
+            ▶
+          </span>
+          套装颜色详情（{kitColors.length} 色）
+        </div>
+        {showKitDetail && (
+          <div style={{
+            marginTop: 8,
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 2,
+            maxHeight: 220,
+            overflowY: 'auto',
+            padding: 6,
+            background: '#f9f9f9',
+            borderRadius: 6,
+            border: '1px solid #eee',
+          }}>
+            {kitColors.map(c => (
+              <div
+                key={c.code}
+                title={`${c.code} ${c.name}`}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                <div style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 2,
+                  background: c.hex,
+                  border: '1px solid rgba(0,0,0,0.1)',
+                }} />
+                <span style={{ fontSize: 8, color: '#999', lineHeight: 1 }}>
+                  {c.code}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div style={sectionStyle}>
@@ -190,6 +252,15 @@ export default function ConfigPanel({ config, onChange, disabled }: ConfigPanelP
               disabled={disabled}
             />
             显示网格线
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, cursor: disabled ? 'not-allowed' : 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={config.showCodes}
+              onChange={(e) => update('showCodes', e.target.checked)}
+              disabled={disabled}
+            />
+            显示色号
           </label>
         </div>
       </div>
